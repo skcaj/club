@@ -136,6 +136,9 @@
                                             <th v-if="table==0">Opciones</th>
                                             <th>Conquistador</th>
                                             <th>Valor Cuota</th>
+                                            <th>Puntualidad</th>
+                                            <th>Uniforme</th>
+                                            <th>Material</th>
                                         </tr>
                                     </thead>
                                     <tbody v-if="arrayDetalle.length">
@@ -150,7 +153,39 @@
                                             <td v-else v-text="detalle.conquistador.nombres+' '+detalle.conquistador.apellidos">
                                             </td>    
                                             <td>
-                                                <input v-model="detalle.cuota" type="number" class="form-control">
+                                                <div class="input-group mb-3" >
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text" >
+                                                        <input type="checkbox" v-model="p_cuota" aria-label="Checkbox for following text input">
+                                                        </div>
+                                                    </div>
+                                                    <input type="number"  v-if="p_cuota" class="form-control" aria-label="Text input with checkbox">
+                                                </div>
+
+                                            </td>
+                                            <td>
+                                               <select class="form-control" v-model="puntualidad">
+                                                <option value=-1>Selecionar</option>
+                                                <option value=20>A Tiempo | 20 pts</option>
+                                                <option value=10>Tarde hasta 15 mt | 10 pts</option>
+                                                <option value=5>Atrasado | 5 pts</option>
+                                               </select>
+                                            </td>
+                                            <td>
+                                               <select class="form-control" v-model="uniforme">
+                                                <option value=-1>Selecionar</option>
+                                                <option value=10>En Orden</option>
+                                                <option value=5>Incomplete</option>
+                                                <option value=0>Sin Uniforme</option>
+                                               </select>
+                                            </td>
+                                            <td>
+                                               <select class="form-control" v-model="material">
+                                                <option value=-1>Selecionar</option>
+                                                <option value=10>Completo</option>
+                                                <option value=5>Incopleto</option>
+                                                <option value=0>Sin Material</option>
+                                               </select>
                                             </td>
                                            
                                             
@@ -379,6 +414,10 @@
                 admin:0,
                 table:0,
                 id_asistencia:0,
+                puntualidad:-1,
+                uniforme:-1,
+                material:-1,
+                p_cuota:false
                 
             }
         },
