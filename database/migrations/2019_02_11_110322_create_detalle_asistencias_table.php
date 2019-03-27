@@ -20,6 +20,13 @@ class CreateDetalleAsistenciasTable extends Migration
             $table->integer('id_conquistador')->unsigned();
             $table->foreign('id_conquistador')->references('id')->on('conquistadores');
             $table->double('cuota');
+            $table->integer('puntualidad')->nullable();
+            $table->integer('uniforme')->nullable();
+            $table->integer('material')->nullable();
+            $table->integer('p_cuota')->nullable();
+            $table->integer('t_puntos')->nullable();
+            $table->boolean('s_cuota')->default(1);
+            
             
         });
     }

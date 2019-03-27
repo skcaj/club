@@ -18,6 +18,8 @@ class AddCamposDetalleAsistencia extends Migration
             $table->integer('uniforme')->nullable()->after('puntualidad');
             $table->integer('material')->nullable()->after('uniforme');
             $table->integer('p_cuota')->nullable()->after('material');
+            $table->integer('t_puntos')->nullable()->after('p_cuota');
+            $table->boolean('s_cuota')->default(1)->after('t_puntos');
         });
     }
 
@@ -29,7 +31,7 @@ class AddCamposDetalleAsistencia extends Migration
     public function down()
     {
         Schema::table('detalle_asistencias',function(Blueprint $table){
-            $table->dropColumn('t_puntos','puntualidad','uniforme','material','p_cuota'); 
+            $table->dropColumn('puntualidad','uniforme','material','p_cuota','t_puntos','s_cuota'); 
           });
     }
 }

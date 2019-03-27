@@ -94,6 +94,7 @@ Route::group(['middleware'=>['auth']],function(){ /// Middleware de Rutas con  U
     Route::get('/asistencia/obtenerDetalles', 'asistenciaController@obtenerDetalles');
     Route::put('/asistencia/delete', 'asistenciaController@delete');
     Route::put('/asistencia/actualizar', 'asistenciaController@update');
+    Route::get('/asistencia/pdf/{id}', 'asistenciaController@asisPdf')->name('asistencia_pdf');
     
     
 

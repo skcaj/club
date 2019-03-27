@@ -45100,6 +45100,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -45144,10 +45158,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             admin: 0,
             table: 0,
             id_asistencia: 0,
-            puntualidad: -1,
-            uniforme: -1,
-            material: -1,
-            p_cuota: false
+            p_cuota: 0,
+            s_cuota: false
 
         };
     },
@@ -45189,6 +45201,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return resultado;
         }
+
     },
     methods: {
         listar: function listar(page, buscar, criterio) {
@@ -45253,8 +45266,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return sw;
         },
-        pdfVenta: function pdfVenta(id) {
-            window.open('http://localhost:8000/venta/pdf/' + id + ',' + '_blank');
+        pdfAsistencia: function pdfAsistencia(id) {
+            window.open('http://localhost:8000/asistencia/pdf/' + id + ',' + '_blank');
         },
         eliminarDetalle: function eliminarDetalle(index) {
             var me = this;
@@ -45298,7 +45311,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.arrayDetalle.push({
                     idconquistador: data['id'],
                     conquistador: data['nombres'] + ' ' + data['apellidos'],
-                    cuota: 0
+                    cuota: 0,
+                    puntualidad: 0,
+                    uniforme: 0,
+                    material: 0,
+                    s_cuota: false,
+                    p_cuota: 0,
+                    t_puntos: 0
 
                 });
             }
@@ -45437,38 +45456,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 me.arrayUnidad = respuesta.unidades;
             }).catch(function (error) {
                 console.log(error);
-            });
-        },
-        desactivarVenta: function desactivarVenta(id) {
-            var _this = this;
-
-            swal({
-                title: 'Esta seguro de anular esta venta?',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Aceptar!',
-                cancelButtonText: 'Cancelar',
-                confirmButtonClass: 'btn btn-success',
-                cancelButtonClass: 'btn btn-danger',
-                buttonsStyling: false,
-                reverseButtons: true
-            }).then(function (result) {
-                if (result.value) {
-                    var me = _this;
-
-                    axios.put('/venta/desactivar', {
-                        'id': id
-                    }).then(function (response) {
-                        me.listar(1, '', '');
-                        swal('Anulado!', 'La venta ha sido anulada con éxito.', 'success');
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                } else if (
-                // Read more about handling dismissals
-                result.dismiss === swal.DismissReason.cancel) {}
             });
         },
         editar: function editar(id) {
@@ -45768,7 +45755,7 @@ var render = function() {
                                         attrs: { type: "button" },
                                         on: {
                                           click: function($event) {
-                                            _vm.pdfVenta(asistencia.id)
+                                            _vm.pdfAsistencia(asistencia.id)
                                           }
                                         }
                                       },
@@ -46143,7 +46130,9 @@ var render = function() {
                               _vm._v(" "),
                               _c("th", [_vm._v("Uniforme")]),
                               _vm._v(" "),
-                              _c("th", [_vm._v("Material")])
+                              _c("th", [_vm._v("Material")]),
+                              _vm._v(" "),
+                              _c("th", [_vm._v("Puntos")])
                             ])
                           ]),
                           _vm._v(" "),
@@ -46221,30 +46210,31 @@ var render = function() {
                                                         {
                                                           name: "model",
                                                           rawName: "v-model",
-                                                          value: _vm.p_cuota,
-                                                          expression: "p_cuota"
+                                                          value:
+                                                            detalle.s_cuota,
+                                                          expression:
+                                                            "detalle.s_cuota"
                                                         }
                                                       ],
                                                       attrs: {
-                                                        type: "checkbox",
-                                                        "aria-label":
-                                                          "Checkbox for following text input"
+                                                        type: "checkbox"
                                                       },
                                                       domProps: {
                                                         checked: Array.isArray(
-                                                          _vm.p_cuota
+                                                          detalle.s_cuota
                                                         )
                                                           ? _vm._i(
-                                                              _vm.p_cuota,
+                                                              detalle.s_cuota,
                                                               null
                                                             ) > -1
-                                                          : _vm.p_cuota
+                                                          : detalle.s_cuota
                                                       },
                                                       on: {
                                                         change: function(
                                                           $event
                                                         ) {
-                                                          var $$a = _vm.p_cuota,
+                                                          var $$a =
+                                                              detalle.s_cuota,
                                                             $$el =
                                                               $event.target,
                                                             $$c = $$el.checked
@@ -46260,21 +46250,36 @@ var render = function() {
                                                               )
                                                             if ($$el.checked) {
                                                               $$i < 0 &&
-                                                                (_vm.p_cuota = $$a.concat(
-                                                                  [$$v]
-                                                                ))
+                                                                _vm.$set(
+                                                                  detalle,
+                                                                  "s_cuota",
+                                                                  $$a.concat([
+                                                                    $$v
+                                                                  ])
+                                                                )
                                                             } else {
                                                               $$i > -1 &&
-                                                                (_vm.p_cuota = $$a
-                                                                  .slice(0, $$i)
-                                                                  .concat(
-                                                                    $$a.slice(
-                                                                      $$i + 1
+                                                                _vm.$set(
+                                                                  detalle,
+                                                                  "s_cuota",
+                                                                  $$a
+                                                                    .slice(
+                                                                      0,
+                                                                      $$i
                                                                     )
-                                                                  ))
+                                                                    .concat(
+                                                                      $$a.slice(
+                                                                        $$i + 1
+                                                                      )
+                                                                    )
+                                                                )
                                                             }
                                                           } else {
-                                                            _vm.p_cuota = $$c
+                                                            _vm.$set(
+                                                              detalle,
+                                                              "s_cuota",
+                                                              $$c
+                                                            )
                                                           }
                                                         }
                                                       }
@@ -46284,16 +46289,57 @@ var render = function() {
                                               ]
                                             ),
                                             _vm._v(" "),
-                                            _vm.p_cuota
+                                            detalle.s_cuota
                                               ? _c("input", {
+                                                  directives: [
+                                                    {
+                                                      name: "model",
+                                                      rawName: "v-model",
+                                                      value: detalle.cuota,
+                                                      expression:
+                                                        "detalle.cuota"
+                                                    }
+                                                  ],
                                                   staticClass: "form-control",
                                                   attrs: {
                                                     type: "number",
-                                                    "aria-label":
-                                                      "Text input with checkbox"
+                                                    "v-bind": (detalle.p_cuota = 5)
+                                                  },
+                                                  domProps: {
+                                                    value: detalle.cuota
+                                                  },
+                                                  on: {
+                                                    input: function($event) {
+                                                      if (
+                                                        $event.target.composing
+                                                      ) {
+                                                        return
+                                                      }
+                                                      _vm.$set(
+                                                        detalle,
+                                                        "cuota",
+                                                        $event.target.value
+                                                      )
+                                                    }
                                                   }
                                                 })
-                                              : _vm._e()
+                                              : _c(
+                                                  "div",
+                                                  {
+                                                    attrs: {
+                                                      "v-bind": (detalle.p_cuota = 0)
+                                                    }
+                                                  },
+                                                  [
+                                                    !detalle.s_cuota
+                                                      ? _c("div", {
+                                                          attrs: {
+                                                            "v-bind": (detalle.cuota = 0)
+                                                          }
+                                                        })
+                                                      : _vm._e()
+                                                  ]
+                                                )
                                           ]
                                         )
                                       ]),
@@ -46305,9 +46351,11 @@ var render = function() {
                                             directives: [
                                               {
                                                 name: "model",
-                                                rawName: "v-model",
-                                                value: _vm.puntualidad,
-                                                expression: "puntualidad"
+                                                rawName: "v-model.number",
+                                                value: detalle.puntualidad,
+                                                expression:
+                                                  "detalle.puntualidad",
+                                                modifiers: { number: true }
                                               }
                                             ],
                                             staticClass: "form-control",
@@ -46325,19 +46373,22 @@ var render = function() {
                                                       "_value" in o
                                                         ? o._value
                                                         : o.value
-                                                    return val
+                                                    return _vm._n(val)
                                                   })
-                                                _vm.puntualidad = $event.target
-                                                  .multiple
-                                                  ? $$selectedVal
-                                                  : $$selectedVal[0]
+                                                _vm.$set(
+                                                  detalle,
+                                                  "puntualidad",
+                                                  $event.target.multiple
+                                                    ? $$selectedVal
+                                                    : $$selectedVal[0]
+                                                )
                                               }
                                             }
                                           },
                                           [
                                             _c(
                                               "option",
-                                              { attrs: { value: "-1" } },
+                                              { attrs: { value: "0" } },
                                               [_vm._v("Selecionar")]
                                             ),
                                             _vm._v(" "),
@@ -46373,9 +46424,10 @@ var render = function() {
                                             directives: [
                                               {
                                                 name: "model",
-                                                rawName: "v-model",
-                                                value: _vm.uniforme,
-                                                expression: "uniforme"
+                                                rawName: "v-model.number",
+                                                value: detalle.uniforme,
+                                                expression: "detalle.uniforme",
+                                                modifiers: { number: true }
                                               }
                                             ],
                                             staticClass: "form-control",
@@ -46393,19 +46445,22 @@ var render = function() {
                                                       "_value" in o
                                                         ? o._value
                                                         : o.value
-                                                    return val
+                                                    return _vm._n(val)
                                                   })
-                                                _vm.uniforme = $event.target
-                                                  .multiple
-                                                  ? $$selectedVal
-                                                  : $$selectedVal[0]
+                                                _vm.$set(
+                                                  detalle,
+                                                  "uniforme",
+                                                  $event.target.multiple
+                                                    ? $$selectedVal
+                                                    : $$selectedVal[0]
+                                                )
                                               }
                                             }
                                           },
                                           [
                                             _c(
                                               "option",
-                                              { attrs: { value: "-1" } },
+                                              { attrs: { value: "0" } },
                                               [_vm._v("Selecionar")]
                                             ),
                                             _vm._v(" "),
@@ -46418,7 +46473,7 @@ var render = function() {
                                             _c(
                                               "option",
                                               { attrs: { value: "5" } },
-                                              [_vm._v("Incomplete")]
+                                              [_vm._v("Incompleto")]
                                             ),
                                             _vm._v(" "),
                                             _c(
@@ -46437,9 +46492,10 @@ var render = function() {
                                             directives: [
                                               {
                                                 name: "model",
-                                                rawName: "v-model",
-                                                value: _vm.material,
-                                                expression: "material"
+                                                rawName: "v-model.number",
+                                                value: detalle.material,
+                                                expression: "detalle.material",
+                                                modifiers: { number: true }
                                               }
                                             ],
                                             staticClass: "form-control",
@@ -46457,19 +46513,22 @@ var render = function() {
                                                       "_value" in o
                                                         ? o._value
                                                         : o.value
-                                                    return val
+                                                    return _vm._n(val)
                                                   })
-                                                _vm.material = $event.target
-                                                  .multiple
-                                                  ? $$selectedVal
-                                                  : $$selectedVal[0]
+                                                _vm.$set(
+                                                  detalle,
+                                                  "material",
+                                                  $event.target.multiple
+                                                    ? $$selectedVal
+                                                    : $$selectedVal[0]
+                                                )
                                               }
                                             }
                                           },
                                           [
                                             _c(
                                               "option",
-                                              { attrs: { value: "-1" } },
+                                              { attrs: { value: "0" } },
                                               [_vm._v("Selecionar")]
                                             ),
                                             _vm._v(" "),
@@ -46482,7 +46541,7 @@ var render = function() {
                                             _c(
                                               "option",
                                               { attrs: { value: "5" } },
-                                              [_vm._v("Incopleto")]
+                                              [_vm._v("Incompleto")]
                                             ),
                                             _vm._v(" "),
                                             _c(
@@ -46492,7 +46551,28 @@ var render = function() {
                                             )
                                           ]
                                         )
-                                      ])
+                                      ]),
+                                      _vm._v(" "),
+                                      _c(
+                                        "td",
+                                        {
+                                          staticStyle: {
+                                            "background-color": "#f86c6b"
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            "$ " +
+                                              _vm._s(
+                                                (detalle.t_puntos =
+                                                  detalle.material +
+                                                  detalle.puntualidad +
+                                                  detalle.uniforme +
+                                                  detalle.p_cuota)
+                                              )
+                                          )
+                                        ]
+                                      )
                                     ])
                                   }),
                                   _vm._v(" "),
@@ -46638,7 +46718,7 @@ var render = function() {
                                         domProps: {
                                           textContent: _vm._s(
                                             detalle.conquistador.nombres +
-                                              "" +
+                                              " " +
                                               detalle.conquistador.apellidos
                                           )
                                         }
@@ -46647,6 +46727,41 @@ var render = function() {
                                       _c("td", {
                                         domProps: {
                                           textContent: _vm._s(detalle.cuota)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(detalle.p_cuota)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(
+                                            detalle.puntualidad
+                                          )
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(detalle.uniforme)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(detalle.material)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        staticStyle: {
+                                          "background-color": "#f86c6b"
+                                        },
+                                        domProps: {
+                                          textContent: _vm._s(detalle.t_puntos)
                                         }
                                       })
                                     ])
@@ -47011,7 +47126,17 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", [_vm._v("Conquistador")]),
         _vm._v(" "),
-        _c("th", [_vm._v("cuota")])
+        _c("th", [_vm._v("Valor Cuota")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Pts Cuota")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Pts Puntualidad")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Pts Uniforme")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Pts Material")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Puntaje total")])
       ])
     ])
   },

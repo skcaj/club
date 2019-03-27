@@ -75,6 +75,15 @@ class asistenciaController extends Controller
                 $detalle->id_asistencia = $asistencias->id;
                 $detalle->id_conquistador = $det['idconquistador'];
                 $detalle->cuota = $det['cuota'];
+                $detalle->puntualidad = $det['puntualidad'];
+                $detalle->uniforme = $det['uniforme'];
+                $detalle->material = $det['material'];
+                $detalle->p_cuota = $det['p_cuota'];
+                $detalle->t_puntos = $det['t_puntos'];
+                $detalle->s_cuota = $det['s_cuota'];
+
+              
+
                       
                 $detalle->save();
             }       
@@ -138,6 +147,19 @@ class asistenciaController extends Controller
                 DB::rollBack();
             }
         
+    }
+    public function asisPdf(Request $request,$id){
+
+
+       
+        $asis= asistencia::with('unidad')->with('User')->where('id','=',$id)->orderBy('id','desc')->take(1)->get();
+        
+        $detalles = detalle_asistencia::with('unidad')->with('conquistador')->where('id_asistencia','=',$id)->get();
+        
+       
+
+        $pdf = \PDF::loadView('pdf.cuota',['detalles'=>$detalles,'asis'=>$asis])->setPaper('a4', 'portrait');
+        return $pdf->stream('cuota.pdf');
     }
     
 }

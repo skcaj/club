@@ -55,7 +55,7 @@
                                             <button type="button" @click="verDatos(asistencia.id)" class="btn btn-success btn-sm">
                                             <i class="icon-eye"></i>
                                             </button> &nbsp;
-                                            <button type="button" @click="pdfVenta(asistencia.id)" class="btn btn-info btn-sm">
+                                            <button type="button" @click="pdfAsistencia(asistencia.id)" class="btn btn-info btn-sm">
                                             <i class="icon-doc"></i>
                                             </button> &nbsp;
                                             
@@ -139,6 +139,7 @@
                                             <th>Puntualidad</th>
                                             <th>Uniforme</th>
                                             <th>Material</th>
+                                            <th>Puntos</th>
                                         </tr>
                                     </thead>
                                     <tbody v-if="arrayDetalle.length">
@@ -156,37 +157,39 @@
                                                 <div class="input-group mb-3" >
                                                     <div class="input-group-prepend">
                                                         <div class="input-group-text" >
-                                                        <input type="checkbox" v-model="p_cuota" aria-label="Checkbox for following text input">
+                                                        <input type="checkbox" v-model="detalle.s_cuota" >
                                                         </div>
                                                     </div>
-                                                    <input type="number"  v-if="p_cuota" class="form-control" aria-label="Text input with checkbox">
+                                                    <input type="number"  v-if="detalle.s_cuota" :v-bind="detalle.p_cuota=5"  class="form-control"  v-model="detalle.cuota">
+                                                    <div v-else :v-bind="detalle.p_cuota=0" ><div v-if="!detalle.s_cuota" :v-bind="detalle.cuota=0" ></div></div>
                                                 </div>
 
                                             </td>
                                             <td>
-                                               <select class="form-control" v-model="puntualidad">
-                                                <option value=-1>Selecionar</option>
+                                               <select class="form-control" v-model.number=detalle.puntualidad>
+                                                <option value=0>Selecionar</option>
                                                 <option value=20>A Tiempo | 20 pts</option>
                                                 <option value=10>Tarde hasta 15 mt | 10 pts</option>
                                                 <option value=5>Atrasado | 5 pts</option>
                                                </select>
                                             </td>
                                             <td>
-                                               <select class="form-control" v-model="uniforme">
-                                                <option value=-1>Selecionar</option>
+                                               <select class="form-control" v-model.number=detalle.uniforme>
+                                                <option value=0>Selecionar</option>
                                                 <option value=10>En Orden</option>
-                                                <option value=5>Incomplete</option>
+                                                <option value=5>Incompleto</option>
                                                 <option value=0>Sin Uniforme</option>
                                                </select>
                                             </td>
                                             <td>
-                                               <select class="form-control" v-model="material">
-                                                <option value=-1>Selecionar</option>
+                                               <select class="form-control" v-model.number="detalle.material">
+                                                <option value=0>Selecionar</option>
                                                 <option value=10>Completo</option>
-                                                <option value=5>Incopleto</option>
+                                                <option value=5>Incompleto</option>
                                                 <option value=0>Sin Material</option>
                                                </select>
                                             </td>
+                                            <td style="background-color: #f86c6b;" >$ {{detalle.t_puntos = detalle.material +detalle.puntualidad + detalle.uniforme + detalle.p_cuota}}</td>
                                            
                                             
                                         </tr>
@@ -195,6 +198,7 @@
                                             <td colspan="5" align="right"><strong>Total Cuotas:</strong></td>
                                             <td>$ {{total=calcularTotal}}</td>
                                         </tr>
+                                        
                                     </tbody>
                                     <tbody v-else>
                                         <tr>
@@ -252,15 +256,25 @@
                                     <thead>
                                         <tr>
                                             <th>Conquistador</th>
-                                            <th>cuota</th>
+                                            <th>Valor Cuota</th>
+                                            <th>Pts Cuota</th>
+                                            <th>Pts Puntualidad</th>
+                                            <th>Pts Uniforme</th>
+                                            <th>Pts Material</th>
+                                            <th>Puntaje total</th>
+
                                         </tr>
                                     </thead>
                                     <tbody v-if="arrayDetalle.length">
                                         <tr v-for="detalle in arrayDetalle" :key="detalle.id">
-                                            <td v-text="detalle.conquistador.nombres +'' +detalle.conquistador.apellidos ">
+                                            <td v-text="detalle.conquistador.nombres +' ' +detalle.conquistador.apellidos ">
                                             </td>
-                                            <td v-text="detalle.cuota">
-                                            </td>
+                                            <td v-text="detalle.cuota"></td>
+                                            <td v-text="detalle.p_cuota"></td>
+                                            <td v-text="detalle.puntualidad"></td>
+                                            <td v-text="detalle.uniforme"></td>
+                                            <td v-text="detalle.material"></td>
+                                            <td style="background-color: #f86c6b;" v-text="detalle.t_puntos"></td>
                                            
                                         </tr>
                                         
@@ -414,10 +428,10 @@
                 admin:0,
                 table:0,
                 id_asistencia:0,
-                puntualidad:-1,
-                uniforme:-1,
-                material:-1,
-                p_cuota:false
+                p_cuota:0,
+                s_cuota:false,
+                
+                
                 
             }
         },
@@ -457,7 +471,8 @@
                     resultado=resultado+(this.arrayDetalle[i].cuota*1)
                 }
                 return resultado;
-            }
+            },
+           
         },
         methods : {
             listar (page,buscar,criterio){
@@ -527,8 +542,9 @@
                 }
                 return sw;
             },
-            pdfVenta(id){
-            window.open('http://localhost:8000/venta/pdf/'+id+','+'_blank');            
+            pdfAsistencia(id){
+            window.open('http://localhost:8000/asistencia/pdf/'+ id + ',' + '_blank');    
+           
             },
             eliminarDetalle(index){
                 let me = this;
@@ -582,6 +598,12 @@
                             idconquistador: data['id'],
                             conquistador: data['nombres']+' '+data['apellidos'],
                             cuota:0,
+                            puntualidad:0,
+                            uniforme:0,
+                            material:0,
+                            s_cuota:false,
+                            p_cuota:0,
+                            t_puntos:0
                             
                         }); 
                     }
@@ -729,45 +751,7 @@
                     console.log(error);
                 });
             },
-            desactivarVenta(id){
-               swal({
-                title: 'Esta seguro de anular esta venta?',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Aceptar!',
-                cancelButtonText: 'Cancelar',
-                confirmButtonClass: 'btn btn-success',
-                cancelButtonClass: 'btn btn-danger',
-                buttonsStyling: false,
-                reverseButtons: true
-                }).then((result) => {
-                if (result.value) {
-                    let me = this;
-
-                    axios.put('/venta/desactivar',{
-                        'id': id
-                    }).then(function (response) {
-                        me.listar(1,'','');
-                        swal(
-                        'Anulado!',
-                        'La venta ha sido anulada con éxito.',
-                        'success'
-                        )
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                    
-                    
-                } else if (
-                    // Read more about handling dismissals
-                    result.dismiss === swal.DismissReason.cancel
-                ) {
-                    
-                }
-                }) 
-            },
+           
             editar(id){
                 let me=this;
                 me.listado=0;
